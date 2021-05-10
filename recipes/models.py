@@ -24,7 +24,7 @@ class Tag(models.Model):
 
 class Recipe(models.Model):
     title = models.CharField(max_length=256, verbose_name='Название')
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         User, related_name='recipe',
         on_delete=models.CASCADE,
         verbose_name='Автор'
@@ -49,13 +49,13 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Теги'
     )
-    slug = models.SlugField(unique=True, verbose_name='Уникальный URL')
+   # slug = models.SlugField(unique=True, verbose_name='Уникальный URL') TODO: реализовать slug
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ['user', 'title']
+        ordering = ['-pub_date', ]
 
 
 class RecipeIngredient(models.Model):
@@ -69,7 +69,7 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ингредиент'
     )
-    count = models.PositiveIntegerField(verbose_name='Количество')
+    amount = models.PositiveIntegerField(verbose_name='Количество')
 
 
 class Favorite(models.Model):

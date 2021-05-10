@@ -18,9 +18,10 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user')
-    list_filter = ('title', 'user__username', 'tags__title')
-    search_fields = ('title', 'user__username')
+    list_display = ('title', 'author')
+    list_filter = ('title', 'author__username', 'tags__title')
+    search_fields = ('title', 'author__username')
+    inlines = [RecipeIngredientInLine]
 
 
 @admin.register(Ingredient)
@@ -33,7 +34,6 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe')
-    inlines = [FavoriteInLine]
 
 
 admin.site.register(Tag)
