@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from slugify import slugify
 
 User = get_user_model()
 
@@ -16,7 +17,22 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=50, verbose_name='Название')
+    class Meal(models.TextChoices):
+        BREAKFAST = 'Завтрак',
+        LUNCH = 'Обед',
+        DINNER = 'Ужин'
+
+    title = models.CharField(
+        max_length=20,
+        verbose_name='Название',
+        choices=Meal.choices
+    )
+
+    color = models.CharField(
+        max_length=20,
+        verbose_name='Цвет'
+    )
+    slug = models.SlugField(unique=True)
 
     def __str__(self):
         return self.title
@@ -49,7 +65,12 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Теги'
     )
-   # slug = models.SlugField(unique=True, verbose_name='Уникальный URL') TODO: реализовать slug
+    slug = models.SlugField(unique=True, verbose_name='Уникальный URL')
+
+    def save(self, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(f'{self.title}-{self.id}')
+        super().save(**kwargs)
 
     def __str__(self):
         return self.title

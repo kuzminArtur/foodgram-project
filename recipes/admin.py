@@ -22,6 +22,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('title', 'author__username', 'tags__title')
     search_fields = ('title', 'author__username')
     inlines = [RecipeIngredientInLine]
+    prepopulated_fields = {'slug': ('title', )}
 
 
 @admin.register(Ingredient)

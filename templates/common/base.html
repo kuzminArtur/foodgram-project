@@ -8,13 +8,9 @@
     <title>{% block title %}{% endblock %}</title>
     {% block css %}{% endblock %}
 </head>
-<body>
+<body class="body">
   {% include './header.html' %}
   <main class="main container">
-    <div class="main__header">
-        <h1 class="main__title">{% block main_title %}{% endblock %}</h1>
-        {% block main_header_content %}{% endblock %}
-    </div>
     {% block content %}{% endblock %}
   </main>
   {% include './footer.html' %}

@@ -1,0 +1,21 @@
+{% extends '../common/base.html' %}
+{% load static %}
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'pages/single.css' %}">
+{% endblock %}
+
+{% block main_title %}Рецепты{% endblock %}
+
+{% block main_header_content %}
+  <ul class="tags">
+      {% for tag in tags %}
+        {% include './includes/tag_filter.html' %}
+      {% endfor %}
+  </ul>
+{% endblock %}
+{% block content %}
+{% endblock %}
+{% block js %}
+{% endblock %}
