@@ -1,8 +1,20 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from .models import Recipe
+
+# def index(request):
+#     return render(request, 'recipes/index.html')
+from django.views.generic import ListView
 
 
-def index(request):
-    return render(request, 'recipes/index.html')
+class RecipesListView(ListView):
+    model = Recipe
+    paginate_by = 6
+    template_name = 'recipes/index.html'
+    queryset = Recipe.objects.all()  # .select_related('author__username')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 def page_not_found(request, exception):

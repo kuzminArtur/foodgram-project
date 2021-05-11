@@ -1,0 +1,24 @@
+{% load thumbnail %}
+<div class="card" data-id="{{ recipe.id }}">
+    {% thumbnail recipe.image "560x300" crop="center" upscale=False as im %}
+        <a href="#" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ recipe.title }}" class="card__image"></a>
+    {% endthumbnail %}
+    <div class="card__body">
+        <a class="card__title link" href="{# recipe_link #}" target="_blank">{{ recipe.title }}</a>
+        <ul class="card__items">
+            <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
+            <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
+            <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
+        </ul>
+        <div class="card__items card__items_column">
+            <p class="card__text"><span class="icon-time"></span> {{ recipe.time_cooking }} мин.</p>
+            <p class="card__text"><span class="icon-user"></span>
+                <a href="#" style="color: black">{% firstof recipe.author.get_full_name recipe.author.username %}</a>
+            </p>
+        </div>
+    </div>
+    <div class="card__footer">
+        <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
+    </div>
+</div>

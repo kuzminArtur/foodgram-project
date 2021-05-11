@@ -39,7 +39,7 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Ингредиенты'
     )
-    image = models.ImageField(upload_to='recipes', verbose_name='Изображение')
+    image = models.ImageField(upload_to='recipes/', verbose_name='Изображение')
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации'

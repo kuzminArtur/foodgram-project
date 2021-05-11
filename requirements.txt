@@ -18,3 +18,4 @@ psycopg2-binary
 django-extensions
 django-debug-toolbar
 Werkzeug
+sorl-thumbnail

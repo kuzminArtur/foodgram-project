@@ -38,6 +38,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/recipes/views.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/templates/recipes/index.html">
           <value>
             <Attribute>
@@ -53,6 +60,13 @@
           </value>
         </entry>
         <entry key="/users/admin.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/venv/lib/python3.9/site-packages/django/views/generic/list.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
