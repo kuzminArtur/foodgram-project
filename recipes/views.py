@@ -27,7 +27,7 @@ class ProfileView(BaseRecipesListView):
     pass
 
 class RecipeDetailView(DetailView):
-    template_name = 'singlePage.html'
+    template_name = 'recipes/recipe_detail.html'
     model = Recipe
 
 

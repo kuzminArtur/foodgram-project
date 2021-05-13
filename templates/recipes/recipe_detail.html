@@ -1,21 +1,66 @@
 {% extends '../common/base.html' %}
+{% load thumbnail %}
 {% load static %}
 {% block title %}{{ recipe.title }}{% endblock %}
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'pages/single.css' %}">
 {% endblock %}
-
-{% block main_title %}Рецепты{% endblock %}
-
-{% block main_header_content %}
-  <ul class="tags">
-      {% for tag in tags %}
-        {% include './includes/tag_filter.html' %}
-      {% endfor %}
-  </ul>
-{% endblock %}
 {% block content %}
+<div class="single-card" data-id="371" data-author="12">
+    {% thumbnail recipe.image "560x560" crop="center" upscale=False as im %}
+        <img src="{{ im.url }}" alt="{{ recipe.title }}" class="card__image"></a>
+    {% endthumbnail %}
+    <div class="single-card__info">
+        <div class="single-card__header-info">
+            <h1 class="single-card__title">{{ recipe.title }}</h1>
+            <div class="single-card__favorite">
+                <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
+                <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
+            </div>
+        </div>
+        <ul class="single-card__items">
+            {% for tag in recipe.tags.all %}
+                <li class="card__item"><span class="badge badge_style_{{ tag.color }}">{{ tag.title }}</span></li>
+            {% endfor %}
+        </ul>
+        <div class="single-card__items single-card__items_column">
+            <p class="single-card__text"><span class="icon-time"></span> {{ recipe.time_cooking }} мин.</p>
+            <ul class="single-card__items">
+                <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span> {% firstof recipe.author.get_full_name recipe.author.username %}</p></li>
+                <li class="single-card__item">  <a style="margin-left: 2.5em" href="#" class="single-card__text">Редактировать рецепт</a></li>
+            </ul>
+        </div>
+        <ul class="single-card__items">
+            <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
+            <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+        </ul>
+        <div class="single-card__section">
+            <h3 class="single-card__section-title">Ингридиенты:</h3>
+            <div class="single-card__items single-card__items_column">
+                {% for ingredient in recipe.recipe_ingredient.all %}
+                    <p class=" single-card__section-item">{{ ingredient.ingredient.title }} -
+                        {{ ingredient.amount }} {{ ingredient.ingredient.unit }}.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="single-card__section">
+            <h3 class="single-card__section-title">Описание:</h3>
+            <p class=" single-card__section-text">{{ recipe.text }}</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
 {% block js %}
+<script src="{% static 'js/components/Purchases.js' %}"></script>
+<script src="{% static 'js/components/Favorites.js' %}"></script>
+<script src="{% static 'js/components/Subscribe.js' %}"></script>
+<script src="{% static 'js/config/config.js' %}"></script>
+
+<script src="{% static 'js/components/MainCards.js' %}"></script>
+<script src="{% static 'js/components/SingleCard.js' %}"></script>
+<script src="{% static 'js/components/Header.js' %}"></script>
+
+<script src="{% static 'js/api/Api.js' %}"></script>
+<script src="{% static 'singlePage.js' %}"></script>
 {% endblock %}

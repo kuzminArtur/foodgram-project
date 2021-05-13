@@ -55,8 +55,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'foodgram.urls'
 
-TEMPLATES_DIR = BASE_DIR / 'templates'
+TEMPLATES_DIR = BASE_DIR / 'templates/'
 MISC_DIR = TEMPLATES_DIR / 'misc'
+USERS_DIR = TEMPLATES_DIR / 'users'
 
 TEMPLATES = [
     {
@@ -64,6 +65,7 @@ TEMPLATES = [
         'DIRS': [
             TEMPLATES_DIR,
             MISC_DIR,
+            USERS_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -115,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -138,5 +140,8 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

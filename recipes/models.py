@@ -83,7 +83,8 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт'
+        verbose_name='Рецепт',
+        related_name='recipe_ingredient'
     )
     ingredient = models.ForeignKey(
         Ingredient,
@@ -91,7 +92,8 @@ class RecipeIngredient(models.Model):
         verbose_name='Ингредиент'
     )
     amount = models.PositiveIntegerField(verbose_name='Количество')
-
+    def __str__(self):
+        return f'{self.ingredient.title} - {self.amount} {self.ingredient}'
 
 class Favorite(models.Model):
     user = models.ForeignKey(

@@ -13,6 +13,8 @@ handler500 = "recipes.views.server_error"  # noqa
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("auth/", include("users.urls")),
+    path("auth/", include("django.contrib.auth.urls")),
     path('', include('recipes.urls'))
 ]
 
