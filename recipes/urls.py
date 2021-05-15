@@ -8,4 +8,9 @@ urlpatterns = [
          name='recipe'),
     path('profiles/<str:username>/', views.ProfileView.as_view(),
          name='profile'),
+    path('subscriptions/', views.SubscriptionView.as_view(),
+         name='subscription'),
+    path('favorites/', views.FavoriteView.as_view(), name='favorite'),
+    path('new/', views.RecipeCreate.as_view(), name='new'),
+
 ]

@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/foodgram/settings.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/foodgram/urls.py">
           <value>
             <Attribute>
@@ -73,6 +80,34 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/templates/recipes/recipe_create.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/templates/users/registration/login.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/templates/users/registration/password_change_form.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/templates/users/signup.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/users/admin.py">
           <value>
             <Attribute>
@@ -84,6 +119,13 @@
           <value>
             <Attribute>
               <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/venv/lib/python3.9/site-packages/django/contrib/auth/views.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
