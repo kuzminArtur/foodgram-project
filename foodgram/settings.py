@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
     'sorl.thumbnail',
     'django_extensions',
     'debug_toolbar',
@@ -96,6 +98,12 @@ DATABASES = {
         'HOST': 'db',  # os.environ.get('DB_HOST'),
         'PORT': '5432',  # os.environ.get('DB_PORT'),
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
 
 # Password validation

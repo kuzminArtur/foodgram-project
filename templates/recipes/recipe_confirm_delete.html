@@ -1,0 +1,20 @@
+{% extends '../common/base.html' %}
+{% load static %}
+{% block title %}Удаление рецепта{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main__header">
+    <h1 class="main__title">Удаление рецепта</h1>
+</div>
+<div class="form-container">
+    <form class="form" method="post">
+        {% csrf_token %}
+        <span class="form__info-text">Удалить рецепт "{{ recipe.title }}"?</span>
+        <button class="button button_style_blue" value="Confirm">Удалить</button>
+    </form>
+</div>
+{% endblock %}

@@ -68,7 +68,7 @@ class Recipe(models.Model):
     slug = models.SlugField(unique=True, verbose_name='Уникальный URL')
 
     def save(self, **kwargs):
-        if self.slug is None:
+        if not self.slug and self.id:
             self.slug = slugify(f'{self.title}-{self.id}')
         super().save(**kwargs)
 
@@ -92,8 +92,10 @@ class RecipeIngredient(models.Model):
         verbose_name='Ингредиент'
     )
     amount = models.PositiveIntegerField(verbose_name='Количество')
+
     def __str__(self):
         return f'{self.ingredient.title} - {self.amount} {self.ingredient}'
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(
