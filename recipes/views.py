@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, \
     PermissionRequiredMixin
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 
-from .models import Recipe, Tag, Ingredient, RecipeIngredient
+from .models import Recipe, Tag, Ingredient, RecipeIngredient, Favorite
 from .forms import RecipeForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
     DeleteView
@@ -12,13 +13,29 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
 User = get_user_model()
 
 
-class BaseRecipesListView(ListView):
+class IsFavoriteMixin:
+    """Add annotation with favorite mark to the View."""
+
+    def get_queryset(self):
+        """Annotate with favorite mark."""
+        qs = super().get_queryset()
+        qs = (
+            qs.select_related('author').annotate(
+                is_favorite=Exists(
+                    Favorite.objects.filter(
+                        user_id=self.request.user.id,
+                        recipe_id=OuterRef('pk'),
+                    ),
+                )
+            )
+        )
+
+        return qs
+
+
+class BaseRecipesListView(IsFavoriteMixin, ListView):
     model = Recipe
     paginate_by = 6
-
-
-class IndexView(BaseRecipesListView):
-    template_name = 'recipes/index.html'
     queryset = Recipe.objects.all().select_related('author').prefetch_related(
         'tags')
     tags = Tag.objects.all()
@@ -32,11 +49,36 @@ class IndexView(BaseRecipesListView):
         return context
 
 
+class IndexView(BaseRecipesListView):
+    """Main page with recipes list."""
+    template_name = 'recipes/index.html'
+
+
 class ProfileView(BaseRecipesListView):
-    pass
+    template_name = 'recipes/profile.html'
+
+    def get(self, request, *args, **kwargs):
+        """Store `author` parameter for data filtration purposes."""
+        self.author = get_object_or_404(User, username=kwargs.get('username'))
+
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        """Filer recipes by author."""
+        qs = super().get_queryset()
+        qs = qs.filter(author=self.author)
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({
+            'author': self.author,
+        })
+        context = super().get_context_data(**kwargs)
+        return context
 
 
-class RecipeDetailView(DetailView):
+class RecipeDetailView(IsFavoriteMixin,DetailView):
     """Detail view for recipe."""
     template_name = 'recipes/recipe_detail.html'
     model = Recipe
@@ -61,6 +103,7 @@ def add_ingredients(post_data, recipe):
 
 
 class RecipeBaseNonSafeViewMixin:
+    """Common methods for Recipe create/edit/delete view."""
 
     def form_valid(self, form):
         """Обработка валидных данных."""
@@ -70,23 +113,24 @@ class RecipeBaseNonSafeViewMixin:
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        """Возврат сообщения об ошибке."""
+        """Return error message."""
         return super().render_to_response(
             self.get_context_data(form=form)
         )
 
     def has_permission(self):
-        """Проверка является ли пользователь автором поста."""
+        """Check recipe owner."""
         return self.request.user == get_object_or_404(
             User,
             recipe__slug=self.kwargs['slug']
-        )
+        ) or self.request.user.is_superuser
 
     def handle_no_permission(self):
-        """Редирект при попытке редактирования не своего поста."""
+        """Redirection in case of an attempt to edit someone else's recipe."""
         return redirect(reverse_lazy('recipe', kwargs=self.kwargs))
 
-    def get_object(self, queryset=None):
+    def get_object(self):
+        """Get edited recipe object."""
         return get_object_or_404(Recipe, slug=self.kwargs['slug'])
 
 
@@ -102,6 +146,7 @@ class RecipeCreate(RecipeBaseNonSafeViewMixin, LoginRequiredMixin,
 
 
 class RecipeDelete(RecipeBaseNonSafeViewMixin, LoginRequiredMixin, DeleteView):
+    """Delete recipe view."""
     success_url = reverse_lazy('index')
 
 

@@ -24,6 +24,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/recipes/api/serializers.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/recipes/api/views.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/recipes/factories.py">
           <value>
             <Attribute>
@@ -39,6 +53,13 @@
           </value>
         </entry>
         <entry key="/recipes/models.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/recipes/urls.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -84,6 +105,13 @@
           <value>
             <Attribute>
               <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/templates/recipes/recipe_form.html">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
             </Attribute>
           </value>
         </entry>

@@ -13,14 +13,12 @@
         <div class="card__items card__items_column">
             <p class="card__text"><span class="icon-time"></span> {{ recipe.time_cooking }} мин.</p>
             <p class="card__text"><span class="icon-user"></span>
-                <a href="{% url 'profile' recipe.author.username %}}" style="color: black">{% firstof recipe.author.get_full_name recipe.author.username %}</a>
+                <a href="{% url 'profile' recipe.author.username %}" style="color: black">{% firstof recipe.author.get_full_name recipe.author.username %}</a>
             </p>
         </div>
     </div>
     <div class="card__footer">
         <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-        {% if user.is_authenticated %}
-            <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
-        {% endif %}
+        {% include './favorite_button.html' %}
     </div>
 </div>

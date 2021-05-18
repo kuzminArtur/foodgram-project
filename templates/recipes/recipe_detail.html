@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{% static 'pages/single.css' %}">
 {% endblock %}
 {% block content %}
-<div class="single-card" data-id="371" data-author="12">
+<div class="single-card" data-id="{{ recipe.id }}" data-author="12">
     {% thumbnail recipe.image "560x560" crop="center" upscale=False as im %}
         <img src="{{ im.url }}" alt="{{ recipe.title }}" class="card__image"></a>
     {% endthumbnail %}
@@ -15,7 +15,7 @@
         <div class="single-card__header-info">
             <h1 class="single-card__title">{{ recipe.title }}</h1>
             <div class="single-card__favorite">
-                <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
+                {% include './includes/favorite_button.html' %}
                 <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
             </div>
         </div>
