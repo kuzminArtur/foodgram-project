@@ -25,6 +25,8 @@ api_patterns = [
     path('ingredients/', api_views.GetIngredients.as_view(), name='ingredient'),
     path('favorites/', api_views.AddFavorites.as_view(), name='add_favorites'),
     path('favorites/<int:pk>/', api_views.RemoveFavorites.as_view()),
+    path('subscriptions/', api_views.AddSubscriptions.as_view()),
+    path('subscriptions/<int:pk>/', api_views.RemoveSubscriptions.as_view()),
 ]
 
 urlpatterns = [

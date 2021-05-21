@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="{% static 'pages/single.css' %}">
 {% endblock %}
 {% block content %}
-<div class="single-card" data-id="{{ recipe.id }}" data-author="12">
-    {% thumbnail recipe.image "560x560" crop="center" upscale=False as im %}
+<div class="single-card" data-id="{{ recipe.id }}" data-author="{{ recipe.author.id }}">
+    {% thumbnail recipe.image "480x480" crop="center" upscale=False as im %}
         <img src="{{ im.url }}" alt="{{ recipe.title }}" class="card__image"></a>
     {% endthumbnail %}
     <div class="single-card__info">
@@ -37,7 +37,9 @@
         <ul class="single-card__items">
             <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
             {% if user.is_authenticated %}
-                <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+                <li class="single-card__item">
+                    {% include './includes/subscribe_button.html' with author=recipe.author %}
+                </li>
             {% endif %}
         </ul>
         <div class="single-card__section">

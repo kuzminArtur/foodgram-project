@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import UniqueConstraint
 from slugify import slugify
 
 User = get_user_model()
@@ -41,7 +42,7 @@ class Tag(models.Model):
 class Recipe(models.Model):
     title = models.CharField(max_length=256, verbose_name='Название')
     author = models.ForeignKey(
-        User, related_name='recipe',
+        User, related_name='recipes',
         on_delete=models.CASCADE,
         verbose_name='Автор'
     )
@@ -110,3 +111,22 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='follower',
+        on_delete=models.CASCADE,
+        verbose_name='Подписчик',
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='following',
+        on_delete=models.CASCADE,
+        verbose_name='Автор',
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['user', 'author'], name='unique_follow')]

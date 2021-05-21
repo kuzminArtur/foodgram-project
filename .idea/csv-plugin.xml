@@ -73,6 +73,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/templates/front/myFollow.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/templates/recipes/includes/paginator.html">
           <value>
             <Attribute>

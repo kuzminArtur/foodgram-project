@@ -5,7 +5,7 @@ from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 
-from .models import Recipe, Tag, Ingredient, RecipeIngredient, Favorite
+from .models import Recipe, Tag, Ingredient, RecipeIngredient, Favorite, Follow
 from .forms import RecipeForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
     DeleteView
@@ -20,42 +20,53 @@ class IsFavoriteMixin:
         """Annotate with favorite mark."""
         qs = super().get_queryset()
         qs = (
-            qs.select_related('author').annotate(
+            qs.annotate(
                 is_favorite=Exists(
                     Favorite.objects.filter(
                         user_id=self.request.user.id,
-                        recipe_id=OuterRef('pk'),
+                        recipe_id=OuterRef('pk')
                     ),
                 )
             )
         )
-
         return qs
 
 
 class BaseRecipesListView(IsFavoriteMixin, ListView):
+    """Base class for recipe list."""
     model = Recipe
     paginate_by = 6
     queryset = Recipe.objects.all().select_related('author').prefetch_related(
         'tags')
     tags = Tag.objects.all()
+    page_title = None
 
     def get_context_data(self, **kwargs):
         """Add tags to the context."""
         kwargs.update({
             'tags': self.tags,
+            'page_title': self._get_page_title()
         })
         context = super().get_context_data(**kwargs)
         return context
+
+    def _get_page_title(self):
+        """Get page title."""
+        assert self.page_title, f"Attribute 'page_title' not set for {self.__class__.__name__}"  # noqa
+
+        return self.page_title
 
 
 class IndexView(BaseRecipesListView):
     """Main page with recipes list."""
     template_name = 'recipes/index.html'
+    page_title = 'Рецепты'
 
 
 class ProfileView(BaseRecipesListView):
+    """Show only recipes by a specific author."""
     template_name = 'recipes/profile.html'
+    page_title = 'Рецепты'
 
     def get(self, request, *args, **kwargs):
         """Store `author` parameter for data filtration purposes."""
@@ -71,17 +82,49 @@ class ProfileView(BaseRecipesListView):
         return qs
 
     def get_context_data(self, **kwargs):
+        """Add author to the context."""
+        is_subscriber = (
+                self.request.user.is_authenticated and
+                Follow.objects.filter(
+                    author=self.author,
+                    user=self.request.user
+                ).exists()
+        )
         kwargs.update({
             'author': self.author,
+            'is_subscriber': is_subscriber,
         })
         context = super().get_context_data(**kwargs)
         return context
 
 
-class RecipeDetailView(IsFavoriteMixin,DetailView):
-    """Detail view for recipe."""
+class RecipeDetailView(IsFavoriteMixin, DetailView):
+    """Detail view of the recipe."""
     template_name = 'recipes/recipe_detail.html'
     model = Recipe
+    queryset = Recipe.objects.all()
+
+    def get_queryset(self):
+        """Annotate with favorite mark."""
+        qs = super().get_queryset()
+        qs = qs.select_related('author').prefetch_related(
+            'recipe_ingredient__ingredient').prefetch_related('tags')
+        return qs
+
+    def get_context_data(self, **kwargs):
+        """Add subscriber mark to the context."""
+        is_subscriber = (
+                self.request.user.is_authenticated and
+                Follow.objects.filter(
+                    author=self.object.author,
+                    user=self.request.user
+                ).exists()
+        )
+        kwargs.update({
+            'is_subscriber': is_subscriber,
+        })
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 def add_ingredients(post_data, recipe):
@@ -106,7 +149,7 @@ class RecipeBaseNonSafeViewMixin:
     """Common methods for Recipe create/edit/delete view."""
 
     def form_valid(self, form):
-        """Обработка валидных данных."""
+        """Processing valid data."""
         form.instance.author = self.request.user
         form.instance.save()
         add_ingredients(form.data, form.instance)
@@ -152,6 +195,7 @@ class RecipeDelete(RecipeBaseNonSafeViewMixin, LoginRequiredMixin, DeleteView):
 
 class RecipeEdit(RecipeBaseNonSafeViewMixin, LoginRequiredMixin,
                  PermissionRequiredMixin, UpdateView):
+    """Edit an existing recipe."""
     form_class = RecipeForm
     template_name = 'recipes/recipe_form.html'
 
@@ -160,16 +204,25 @@ class RecipeEdit(RecipeBaseNonSafeViewMixin, LoginRequiredMixin,
         return reverse_lazy('recipe', kwargs={'slug': self.object.slug})
 
 
+class FavoriteView(LoginRequiredMixin, BaseRecipesListView):
+    """Show only favorite recipes."""
+    page_title = 'Избранное'
+    template_name = 'recipes/index.html'
+
+    def get_queryset(self):
+        """Display favorite recipes only."""
+        qs = super().get_queryset()
+        qs = qs.filter(fancier__user=self.request.user)
+
+        return qs
+
+
 class SubscriptionView(BaseRecipesListView):
     pass
 
 
-class FavoriteView(DetailView):
-    pass
-
-
 def page_not_found(request, exception):
-    """Отображает страницу 404 ошибки"""
+    """Show 404 error page."""
     return render(
         request,
         "misc/404.html",
@@ -179,5 +232,5 @@ def page_not_found(request, exception):
 
 
 def server_error(request):
-    """Отображает страницу 500 ошибки"""
+    """Show 505 error page."""
     return render(request, "misc/500.html", status=500)
