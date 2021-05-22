@@ -65,7 +65,7 @@ class AddSubscriptions(APIView):
 
     def validate_subscribe(self, author):
         """Deny self-subscription."""
-        return author != self.context['request'].user
+        return author != self.request.user
 
 
 class RemoveSubscriptions(APIView):

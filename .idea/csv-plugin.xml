@@ -59,6 +59,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/recipes/templatetags/user_filters.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/recipes/urls.py">
           <value>
             <Attribute>
@@ -88,6 +95,20 @@
           </value>
         </entry>
         <entry key="/templates/recipes/includes/recipe_card.html">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/templates/recipes/includes/subscribe_button.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/templates/recipes/includes/subscriptions_author.html">
           <value>
             <Attribute>
               <option name="separator" value=":" />

@@ -8,18 +8,17 @@ def addclass(field, css):
     return field.as_widget(attrs={"class": css})
 
 
-endings = ['рецепт', 'рецепта', 'рецептов']
-
-
 @register.filter
 def get_num_ending(num, ending):
-    num = num % 100
-    if 11 <= num <= 19:
-        return ending[2]
+    ending = ending.split(',')
 
-    num = num % 10
-    if num == 0:
-        return ending[2]
-    if num == 1:
-        return ending[0]
-    return ending[1]
+    remainder = num % 100
+    if 11 <= remainder <= 19:
+        return f'{num} {ending[2]}'
+
+    remainder = remainder % 10
+    if remainder == 0:
+        return f'{num} {ending[2]}'
+    if remainder == 4:
+        return f'{num} {ending[1]}'
+    return f'{num} {ending[2]}'

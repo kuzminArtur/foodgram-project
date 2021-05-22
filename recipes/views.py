@@ -217,8 +217,18 @@ class FavoriteView(LoginRequiredMixin, BaseRecipesListView):
         return qs
 
 
-class SubscriptionView(BaseRecipesListView):
-    pass
+class SubscriptionView(LoginRequiredMixin, ListView):
+    model = User
+    paginate_by = 6
+    queryset = User.objects.all()
+    template_name = 'recipes/subscriptions.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(following__user=self.request.user).prefetch_related(
+            'recipes')
+
+        return qs
 
 
 def page_not_found(request, exception):

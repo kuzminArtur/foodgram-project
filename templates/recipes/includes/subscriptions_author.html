@@ -1,28 +1,32 @@
+{% load user_filters %}
 {% load thumbnail %}
+{% csrf_token %}
 <div class="card-user" data-author="{{ author.id }}">
         <div class="card-user__header">
-            <h2 class="card-user__title">{% firstof recipe.author.get_full_name recipe.author.username %}</h2>
+            <h2 class="card-user__title">{% firstof author.get_full_name author.username %}</h2>
         </div>
-        {% thumbnail recipe.image "364x240" crop="center" upscale=False as im %}
+
         <div class="card-user__body">
             <ul class="card-user__items">
-                {% for recipe in author.recipes|slice:":3" %}
+                {% for recipe in author.recipes.all|slice:":3" %}
+                    {% thumbnail recipe.image "364x240" crop="center" upscale=False as im %}
                     <li class="card-user__item">
                         <div class="recipe">
                             <img src="{{ im.url }}" alt="{{ recipe.title }}" class="recipe__image">
-                            <h3 class="recipe__title">Французские тосты</h3>
-                            <p class="recipe__text"><span class="icon-time"></span> 20 мин.</p>
+                            <h3 class="recipe__title">{{ recipe.title }}</h3>
+                            <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time_cooking }} мин.</p>
                         </div>
                     </li>
+                    {% endthumbnail %}
                 {% endfor %}
-                {% if author.recipes_count > 3 %}
-                <li class="card-user__item">
-                    <a href="{% url 'profile' recipe.author.username %}" class="card-user__link link">Еще {{author.recipes_count|add:"-3"|get_num_ending:" рецепт, рецепта, рецептов"}}...</a>
-                </li>
+                {% if author.recipes.count > 3 %}
+                    <li class="card-user__item">
+                        <a href="{% url 'profile' author.username %}" class="card-user__link link">Еще {{ author.recipes.count|add:"-3"|get_num_ending:"рецепт,рецепта,рецептов" }}...</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
-        {% endthumbnail %}
         <div class="card-user__footer">
-            <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
+            <button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Отписаться</button>
         </div>
-    </div>
+</div>
