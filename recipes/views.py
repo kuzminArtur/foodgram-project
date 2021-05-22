@@ -36,7 +36,8 @@ class BaseRecipesListView(IsFavoriteMixin, ListView):
     """Base class for recipe list."""
     model = Recipe
     paginate_by = 6
-    queryset = Recipe.objects.all().select_related('author').prefetch_related(
+    queryset = Recipe.objects.all().select_related(
+        'author').prefetch_related(
         'tags')
     tags = Tag.objects.all()
     page_title = None
@@ -56,6 +57,12 @@ class BaseRecipesListView(IsFavoriteMixin, ListView):
 
         return self.page_title
 
+    def get_queryset(self):
+        filter_tag = self.request.GET.getlist('filter_tag')
+        qs = super().get_queryset()
+        if filter_tag:
+            qs = qs.filter(tags__slug__in=filter_tag).distinct()
+        return qs
 
 class IndexView(BaseRecipesListView):
     """Main page with recipes list."""
@@ -145,12 +152,12 @@ def add_ingredients(post_data, recipe):
     RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
 
-class RecipeBaseNonSafeViewMixin:
+class RecipeBaseNonSafeViewMixin(LoginRequiredMixin):
     """Common methods for Recipe create/edit/delete view."""
 
     def form_valid(self, form):
         """Processing valid data."""
-        form.instance.author = self.request.user
+        form.instance.author = form.instance.author or self.request.user
         form.instance.save()
         add_ingredients(form.data, form.instance)
         return super().form_valid(form)
@@ -165,7 +172,7 @@ class RecipeBaseNonSafeViewMixin:
         """Check recipe owner."""
         return self.request.user == get_object_or_404(
             User,
-            recipe__slug=self.kwargs['slug']
+            recipes__slug=self.kwargs['slug']
         ) or self.request.user.is_superuser
 
     def handle_no_permission(self):
@@ -177,7 +184,7 @@ class RecipeBaseNonSafeViewMixin:
         return get_object_or_404(Recipe, slug=self.kwargs['slug'])
 
 
-class RecipeCreate(RecipeBaseNonSafeViewMixin, LoginRequiredMixin,
+class RecipeCreate(RecipeBaseNonSafeViewMixin,
                    CreateView):
     """Create recipe."""
     form_class = RecipeForm
@@ -188,12 +195,12 @@ class RecipeCreate(RecipeBaseNonSafeViewMixin, LoginRequiredMixin,
         return reverse_lazy('recipe', kwargs={'slug': self.object.slug})
 
 
-class RecipeDelete(RecipeBaseNonSafeViewMixin, LoginRequiredMixin, DeleteView):
+class RecipeDelete(RecipeBaseNonSafeViewMixin, DeleteView):
     """Delete recipe view."""
     success_url = reverse_lazy('index')
 
 
-class RecipeEdit(RecipeBaseNonSafeViewMixin, LoginRequiredMixin,
+class RecipeEdit(RecipeBaseNonSafeViewMixin,
                  PermissionRequiredMixin, UpdateView):
     """Edit an existing recipe."""
     form_class = RecipeForm

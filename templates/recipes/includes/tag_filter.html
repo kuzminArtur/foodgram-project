@@ -1,4 +1,5 @@
+{% load user_filters %}
 <li class="tags__item">
-          <a id="{{ tag.slug }}" class="tags__checkbox tags__checkbox_style_{{ tag.color }} tags__checkbox_active" href="{{ tag.slug }}"></a>
+          <a id="{{ tag.slug }}" class="tags__checkbox tags__checkbox_style_{{ tag.color }} {% activate_tag request tag %}" href="{{ request.path }}?{% add_tag request tag %}"></a>
           <span class="tags__label">{{ tag.title }}</span>
 </li>
