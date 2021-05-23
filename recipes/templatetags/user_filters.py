@@ -1,4 +1,5 @@
 from django import template
+from urllib.parse import urlencode
 
 register = template.Library()
 
@@ -29,14 +30,12 @@ def get_num_ending(num, ending):
 @register.simple_tag
 def add_tag(request, tag):
     """Make GET param with tags."""
-    new_get_params = request.GET.copy()
     current_tags = request.GET.getlist('filter_tag')
     if tag.slug in current_tags:
         current_tags.remove(tag.slug)
     else:
         current_tags.append(tag.slug)
-    new_get_params.setlist('filter_tag', current_tags)
-    return new_get_params.urlencode()
+    return urlencode({'filter_tag': current_tags}, doseq=True)
 
 
 @register.simple_tag
@@ -44,3 +43,11 @@ def activate_tag(request, tag):
     current_tags = request.GET.getlist('filter_tag')
     if tag.slug in current_tags:
         return 'tags__checkbox_active'
+
+
+@register.simple_tag
+def filter_tag(request):
+    current_tags = request.GET.getlist('filter_tag')
+    if current_tags:
+        return f'&{urlencode({"filter_tag": current_tags}, doseq=True)}'
+    return ""
