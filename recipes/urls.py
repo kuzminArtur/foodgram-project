@@ -27,6 +27,8 @@ api_patterns = [
     path('favorites/<int:pk>/', api_views.RemoveFavorites.as_view()),
     path('subscriptions/', api_views.AddSubscriptions.as_view()),
     path('subscriptions/<int:pk>/', api_views.RemoveSubscriptions.as_view()),
+    path('purchases/', api_views.AddPurchases.as_view()),
+    path('purchases/<int:pk>/', api_views.RemovePurchases.as_view()),
 ]
 
 urlpatterns = [

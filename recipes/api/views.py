@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import IngredientSerializer
-from ..models import Ingredient, Favorite, Follow
+from ..models import Ingredient, Favorite, Follow, Purchase
 
 User = get_user_model()
 
@@ -76,3 +76,31 @@ class RemoveSubscriptions(APIView):
         Follow.objects.filter(author_id=pk, user=request.user).delete()
 
         return Response({'success': True}, status=status.HTTP_200_OK)
+
+
+class AddPurchases(APIView):
+    """Add recipe to purchases."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        Purchase.objects.get_or_create(
+            user=request.user,
+            recipe_id=request.data['id']
+        )
+
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+
+class RemovePurchases(APIView):
+    """Delete recipe from purchases."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        Purchase.objects.filter(recipe_id=pk, user=request.user).delete()
+
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+class GetPurchases(ListAPIView):
+    model = Purchase
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer

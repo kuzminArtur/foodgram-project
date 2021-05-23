@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
+from django.db import models
 from django.db.models import UniqueConstraint
 from slugify import slugify
 
@@ -7,6 +8,7 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
+    """Ingredient model."""
     title = models.CharField(max_length=256, verbose_name='Название')
     unit = models.CharField(max_length=128, verbose_name='Еденицы измерения')
 
@@ -18,12 +20,16 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
+    """Tag model."""
+
     class Meal(models.TextChoices):
+        """Choices for tag."""
         BREAKFAST = 'Завтрак',
         LUNCH = 'Обед',
         DINNER = 'Ужин'
 
     title = models.CharField(
+        unique=True,
         max_length=20,
         verbose_name='Название',
         choices=Meal.choices
@@ -40,6 +46,7 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
+    """Recipe model."""
     title = models.CharField(max_length=256, verbose_name='Название')
     author = models.ForeignKey(
         User, related_name='recipes',
@@ -48,7 +55,10 @@ class Recipe(models.Model):
     )
     text = models.TextField(verbose_name='Описание')
     time_cooking = models.PositiveIntegerField(
-        verbose_name='Время приготовленния'
+        verbose_name='Время приготовленния',
+        validators=[
+            MinValueValidator(1),
+        ],
     )
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -69,6 +79,7 @@ class Recipe(models.Model):
     slug = models.SlugField(unique=True, verbose_name='Уникальный URL')
 
     def save(self, **kwargs):
+        """Append slug field value."""
         if not self.slug and self.id:
             self.slug = slugify(f'{self.title}-{self.id}')
         super().save(**kwargs)
@@ -81,6 +92,7 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
+    """Many-to-many relationship for Recipe and Ingredient model."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -92,13 +104,19 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ингредиент'
     )
-    amount = models.PositiveIntegerField(verbose_name='Количество')
+    amount = models.PositiveIntegerField(
+        verbose_name='Количество',
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
 
     def __str__(self):
         return f'{self.ingredient.title} - {self.amount} {self.ingredient}'
 
 
 class Favorite(models.Model):
+    """Model for favorite relation between User and Recipe models."""
     user = models.ForeignKey(
         User,
         related_name='favorite',
@@ -114,6 +132,7 @@ class Favorite(models.Model):
 
 
 class Follow(models.Model):
+    """Model for follow relation between two User."""
     user = models.ForeignKey(
         User,
         related_name='follower',
@@ -128,5 +147,23 @@ class Follow(models.Model):
     )
 
     class Meta:
+        """Duplicate subscription protection."""
         constraints = [
             UniqueConstraint(fields=['user', 'author'], name='unique_follow')]
+
+
+class Purchase(models.Model):
+    """Model for purchase relation between User and Recipe models."""
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='purchases',
+        verbose_name='Пользователь',
+    )
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт в покупках',
+    )
+
+    class Meta:
+        """Duplicate purchase protection."""
+        constraints = [
+            UniqueConstraint(fields=['user', 'recipe'], name='unique_purchase')
+        ]

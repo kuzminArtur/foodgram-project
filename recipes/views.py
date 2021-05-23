@@ -5,7 +5,8 @@ from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 
-from .models import Recipe, Tag, Ingredient, RecipeIngredient, Favorite, Follow
+from .models import Recipe, Tag, Ingredient, RecipeIngredient, Favorite, \
+    Follow, Purchase
 from .forms import RecipeForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
     DeleteView
@@ -32,7 +33,26 @@ class IsFavoriteMixin:
         return qs
 
 
-class BaseRecipesListView(IsFavoriteMixin, ListView):
+class IsInPurchasesMixin:
+    """Add annotation with purchases mark to the View."""
+
+    def get_queryset(self):
+        """Annotate with favorite mark."""
+        qs = super().get_queryset()
+        qs = (
+            qs.annotate(
+                is_in_purchases=Exists(
+                    Purchase.objects.filter(
+                        user_id=self.request.user.id,
+                        recipe_id=OuterRef('pk')
+                    ),
+                )
+            )
+        )
+        return qs
+
+
+class BaseRecipesListView(IsInPurchasesMixin, IsFavoriteMixin, ListView):
     """Base class for recipe list."""
     model = Recipe
     paginate_by = 6
@@ -63,6 +83,7 @@ class BaseRecipesListView(IsFavoriteMixin, ListView):
         if filter_tag:
             qs = qs.filter(tags__slug__in=filter_tag).distinct()
         return qs
+
 
 class IndexView(BaseRecipesListView):
     """Main page with recipes list."""
@@ -105,7 +126,7 @@ class ProfileView(BaseRecipesListView):
         return context
 
 
-class RecipeDetailView(IsFavoriteMixin, DetailView):
+class RecipeDetailView(IsInPurchasesMixin, IsFavoriteMixin, DetailView):
     """Detail view of the recipe."""
     template_name = 'recipes/recipe_detail.html'
     model = Recipe
@@ -225,6 +246,7 @@ class FavoriteView(LoginRequiredMixin, BaseRecipesListView):
 
 
 class SubscriptionView(LoginRequiredMixin, ListView):
+    """Show only subscription authors."""
     model = User
     paginate_by = 6
     queryset = User.objects.all()
@@ -234,6 +256,19 @@ class SubscriptionView(LoginRequiredMixin, ListView):
         qs = super().get_queryset()
         qs = qs.filter(following__user=self.request.user).prefetch_related(
             'recipes')
+
+        return qs
+
+
+class PurchasesView(LoginRequiredMixin, BaseRecipesListView):
+    """Show recipes in purchases."""
+    page_title = 'Избранное'
+    template_name = 'recipes/index.html'
+
+    def get_queryset(self):
+        """Display favorite recipes only."""
+        qs = super().get_queryset()
+        qs = qs.filter(purchases__user=self.request.user)
 
         return qs
 

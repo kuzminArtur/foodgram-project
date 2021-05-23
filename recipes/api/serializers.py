@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import Ingredient
+from ..models import Ingredient, Purchase
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -10,3 +10,5 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('title', 'dimension')
         model = Ingredient
+
+# class PurchaseSerialiser:
