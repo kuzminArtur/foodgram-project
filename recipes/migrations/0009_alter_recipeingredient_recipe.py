@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0008_auto_20210511_1948'),
     ]
@@ -14,6 +13,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipeingredient',
             name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipe_ingredient', to='recipes.recipe', verbose_name='Рецепт'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='recipe_ingredient', to='recipes.recipe',
+                verbose_name='Рецепт'),
         ),
     ]

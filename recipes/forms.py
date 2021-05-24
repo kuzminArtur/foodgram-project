@@ -4,6 +4,7 @@ from .models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
+    """Recipe create/edit form."""
     class Meta:
         model = Recipe
         fields = (
@@ -16,4 +17,3 @@ class RecipeForm(forms.ModelForm):
         widgets = {
             'tags': forms.CheckboxSelectMultiple(),
         }
-

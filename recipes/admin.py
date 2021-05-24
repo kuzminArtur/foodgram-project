@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag, Favorite, Follow
+from recipes.models import (Ingredient, Recipe, RecipeIngredient, Tag,
+                            Favorite, Follow)
 
 
 class RecipeIngredientInLine(admin.StackedInline):
@@ -22,7 +23,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('title', 'author__username', 'tags__title')
     search_fields = ('title', 'author__username')
     inlines = [RecipeIngredientInLine]
-    prepopulated_fields = {'slug': ('title', )}
+    prepopulated_fields = {'slug': ('title',)}
 
 
 @admin.register(Ingredient)

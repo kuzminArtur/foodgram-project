@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0007_recipe_slug'),
     ]
@@ -13,7 +12,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tag',
             name='color',
-            field=models.CharField(default='green', max_length=20, verbose_name='Цвет'),
+            field=models.CharField(default='green', max_length=20,
+                                   verbose_name='Цвет'),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -25,6 +25,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tag',
             name='title',
-            field=models.CharField(choices=[('Завтрак', 'Breakfast'), ('Обед', 'Lunch'), ('Ужин', 'Dinner')], max_length=20, verbose_name='Название'),
+            field=models.CharField(
+                choices=[('Завтрак', 'Breakfast'), ('Обед', 'Lunch'),
+                         ('Ужин', 'Dinner')], max_length=20,
+                verbose_name='Название'),
         ),
     ]

@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('recipes', '0002_auto_20210506_1847'),
@@ -25,22 +24,28 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='ingredient',
             name='unit',
-            field=models.CharField(max_length=128, verbose_name='Еденицы измерения'),
+            field=models.CharField(max_length=128,
+                                   verbose_name='Еденицы измерения'),
         ),
         migrations.AlterField(
             model_name='recipe',
             name='image',
-            field=models.ImageField(upload_to='recipes', verbose_name='Изображение'),
+            field=models.ImageField(upload_to='recipes',
+                                    verbose_name='Изображение'),
         ),
         migrations.AlterField(
             model_name='recipe',
             name='ingredients',
-            field=models.ManyToManyField(related_name='recipes', through='recipes.RecipeIngredient', to='recipes.Ingredient', verbose_name='Ингредиенты'),
+            field=models.ManyToManyField(related_name='recipes',
+                                         through='recipes.RecipeIngredient',
+                                         to='recipes.Ingredient',
+                                         verbose_name='Ингредиенты'),
         ),
         migrations.AlterField(
             model_name='recipe',
             name='pub_date',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации'),
+            field=models.DateTimeField(auto_now_add=True,
+                                       verbose_name='Дата публикации'),
         ),
         migrations.AlterField(
             model_name='recipe',
@@ -50,7 +55,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipe',
             name='tags',
-            field=models.ManyToManyField(related_name='recipes', to='recipes.Tag', verbose_name='Теги'),
+            field=models.ManyToManyField(related_name='recipes',
+                                         to='recipes.Tag',
+                                         verbose_name='Теги'),
         ),
         migrations.AlterField(
             model_name='recipe',
@@ -60,7 +67,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipe',
             name='time_cooking',
-            field=models.PositiveIntegerField(verbose_name='Время приготовленния'),
+            field=models.PositiveIntegerField(
+                verbose_name='Время приготовленния'),
         ),
         migrations.AlterField(
             model_name='recipe',
@@ -70,7 +78,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipe',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipe', to=settings.AUTH_USER_MODEL, verbose_name='Автор'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='recipe', to=settings.AUTH_USER_MODEL,
+                verbose_name='Автор'),
         ),
         migrations.AlterField(
             model_name='recipeingredient',
@@ -80,12 +91,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipeingredient',
             name='ingredient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.ingredient', verbose_name='Ингредиент'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='recipes.ingredient', verbose_name='Ингредиент'),
         ),
         migrations.AlterField(
             model_name='recipeingredient',
             name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.recipe', verbose_name='Рецепт'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='recipes.recipe', verbose_name='Рецепт'),
         ),
         migrations.AlterField(
             model_name='tag',
@@ -95,9 +110,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Favorite',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fancier', to='recipes.recipe', verbose_name='Рецепт')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorite', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True,
+                                           serialize=False,
+                                           verbose_name='ID')),
+                ('recipe',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='fancier', to='recipes.recipe',
+                                   verbose_name='Рецепт')),
+                ('user',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='favorite',
+                                   to=settings.AUTH_USER_MODEL,
+                                   verbose_name='Пользователь')),
             ],
         ),
     ]

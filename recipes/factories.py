@@ -1,10 +1,9 @@
 from random import choice
-from django.template.defaultfilters import slugify
+
 import factory
 from factory import fuzzy
 
 from users.factories import UserFactory
-
 from . import models
 
 
@@ -14,8 +13,8 @@ class BaseRecipeFactory(factory.django.DjangoModelFactory):
     title = factory.Faker('word')
     image = factory.django.ImageField(width=1000)
     text = factory.Faker('text')
-    # no ingredients
     time_cooking = fuzzy.FuzzyInteger(10, 120)
+
     class Meta:
         model = models.Recipe
 

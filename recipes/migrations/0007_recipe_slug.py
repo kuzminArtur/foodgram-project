@@ -5,7 +5,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0006_alter_recipe_image'),
     ]
@@ -14,7 +13,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recipe',
             name='slug',
-            field=models.SlugField(default=django.utils.timezone.now, unique=True, verbose_name='Уникальный URL'),
+            field=models.SlugField(default=django.utils.timezone.now,
+                                   unique=True, verbose_name='Уникальный URL'),
             preserve_default=False,
         ),
     ]

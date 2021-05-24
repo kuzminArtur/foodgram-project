@@ -24,5 +24,3 @@ def get_num_ending(num, ending):
     if remainder == 4:
         return f'{num} {ending[1]}'
     return f'{num} {ending[2]}'
-
-

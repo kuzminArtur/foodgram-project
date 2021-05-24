@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('recipes', '0010_auto_20210518_1622'),
@@ -16,16 +15,25 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='follow',
             name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='following', to=settings.AUTH_USER_MODEL, verbose_name='Автор'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='following', to=settings.AUTH_USER_MODEL,
+                verbose_name='Автор'),
         ),
         migrations.AlterField(
             model_name='follow',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='follower', to=settings.AUTH_USER_MODEL, verbose_name='Подписчик'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='follower', to=settings.AUTH_USER_MODEL,
+                verbose_name='Подписчик'),
         ),
         migrations.AlterField(
             model_name='recipe',
             name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipes', to=settings.AUTH_USER_MODEL, verbose_name='Автор'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='recipes', to=settings.AUTH_USER_MODEL,
+                verbose_name='Автор'),
         ),
     ]
