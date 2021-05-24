@@ -20,6 +20,10 @@ docker-compose exec web python manage.py migrate --noinput
 docker-compose exec web python manage.py createsuperuser
 docker-compose exec web python manage.py collectstatic --noinput
 ```
+- Для загрузки ингредиентов выполнить
+```bash
+python3 manage.py load_ingredient
+```
 
 ## Альтернативный вариант с использованием make
 - Запуск проекта:
