@@ -1,55 +1,20 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin, \
-    PermissionRequiredMixin
-from django.db.models import Exists, OuterRef
-from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
+from django.db.models import Sum, F
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views.generic import (ListView, DetailView, CreateView, UpdateView,
+                                  DeleteView)
 
-from .models import Recipe, Tag, Ingredient, RecipeIngredient, Favorite, \
-    Follow, Purchase
 from .forms import RecipeForm
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
-    DeleteView
+from .mixins import IsInPurchasesMixin, IsFavoriteMixin
+from .models import Recipe, Tag, Follow
+from .utils import get_pdf, add_ingredients
 
 User = get_user_model()
-
-
-class IsFavoriteMixin:
-    """Add annotation with favorite mark to the View."""
-
-    def get_queryset(self):
-        """Annotate with favorite mark."""
-        qs = super().get_queryset()
-        qs = (
-            qs.annotate(
-                is_favorite=Exists(
-                    Favorite.objects.filter(
-                        user_id=self.request.user.id,
-                        recipe_id=OuterRef('pk')
-                    ),
-                )
-            )
-        )
-        return qs
-
-
-class IsInPurchasesMixin:
-    """Add annotation with purchases mark to the View."""
-
-    def get_queryset(self):
-        """Annotate with favorite mark."""
-        qs = super().get_queryset()
-        qs = (
-            qs.annotate(
-                is_in_purchases=Exists(
-                    Purchase.objects.filter(
-                        user_id=self.request.user.id,
-                        recipe_id=OuterRef('pk')
-                    ),
-                )
-            )
-        )
-        return qs
 
 
 class BaseRecipesListView(IsInPurchasesMixin, IsFavoriteMixin, ListView):
@@ -78,6 +43,7 @@ class BaseRecipesListView(IsInPurchasesMixin, IsFavoriteMixin, ListView):
         return self.page_title
 
     def get_queryset(self):
+        """Filter by tags."""
         filter_tag = self.request.GET.getlist('filter_tag')
         qs = super().get_queryset()
         if filter_tag:
@@ -153,24 +119,6 @@ class RecipeDetailView(IsInPurchasesMixin, IsFavoriteMixin, DetailView):
         })
         context = super().get_context_data(**kwargs)
         return context
-
-
-def add_ingredients(post_data, recipe):
-    """Create ingredients for recipe."""
-    RecipeIngredient.objects.filter(recipe=recipe).delete()
-    recipe_ingredients = []
-    for key, value in post_data.items():
-        if key.startswith('nameIngredient'):
-            num = key.split('_')[1]
-            ingredient = get_object_or_404(Ingredient, title=value)
-            recipe_ingredients.append(
-                RecipeIngredient(
-                    recipe=recipe,
-                    ingredient=ingredient,
-                    amount=post_data[f'valueIngredient_{num}']
-                )
-            )
-    RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
 
 class RecipeBaseNonSafeViewMixin(LoginRequiredMixin):
@@ -260,29 +208,28 @@ class SubscriptionView(LoginRequiredMixin, ListView):
         return qs
 
 
-class PurchasesView(LoginRequiredMixin, BaseRecipesListView):
+class PurchasesView(LoginRequiredMixin, ListView):
     """Show recipes in purchases."""
     page_title = 'Избранное'
-    template_name = 'recipes/index.html'
+    template_name = 'recipes/purchases.html'
 
     def get_queryset(self):
-        """Display favorite recipes only."""
-        qs = super().get_queryset()
-        qs = qs.filter(purchases__user=self.request.user)
+        """Display recipes in purchases."""
+        qs = self.request.user.purchases.all()
 
         return qs
 
 
-def page_not_found(request, exception):
-    """Show 404 error page."""
-    return render(
-        request,
-        "misc/404.html",
-        {"path": request.path},
-        status=404
+@login_required
+def download(request):
+    """Upload pdf-file with purchases ingredients."""
+    purchases = request.user.purchases.select_related('recipe').annotate(
+        title=F('recipe__ingredients__title'),
+        unit=F('recipe__ingredients__unit')
+    ).values(
+        'title', 'unit'
+    ).annotate(
+        amount=Sum('recipe__recipe_ingredient__amount')
     )
-
-
-def server_error(request):
-    """Show 505 error page."""
-    return render(request, "misc/500.html", status=500)
+    buffer = get_pdf(purchases)
+    return FileResponse(buffer, as_attachment=True, filename='need_to_by.pdf')

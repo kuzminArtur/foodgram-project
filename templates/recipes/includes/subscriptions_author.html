@@ -9,15 +9,9 @@
         <div class="card-user__body">
             <ul class="card-user__items">
                 {% for recipe in author.recipes.all|slice:":3" %}
-                    {% thumbnail recipe.image "364x240" crop="center" upscale=False as im %}
                     <li class="card-user__item">
-                        <div class="recipe">
-                            <img src="{{ im.url }}" alt="{{ recipe.title }}" class="recipe__image">
-                            <h3 class="recipe__title">{{ recipe.title }}</h3>
-                            <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time_cooking }} мин.</p>
-                        </div>
+                        {% include './recipe_small_card.html' %}
                     </li>
-                    {% endthumbnail %}
                 {% endfor %}
                 {% if author.recipes.count > 3 %}
                     <li class="card-user__item">
@@ -27,6 +21,6 @@
             </ul>
         </div>
         <div class="card-user__footer">
-            <button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Отписаться</button>
+            <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
         </div>
 </div>

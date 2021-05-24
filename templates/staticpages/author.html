@@ -1,13 +1,13 @@
 {% extends '../common/base.html' %}
 {% load static %}
-{% block title %}Ошибка 404{% endblock %}
+{% block title %}Об авторе{% endblock %}
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock %}
 {% block content %}
     <div class="custom-center-block">
-            <p class="custom-text-block">Страница {{ request.path }} не найдена</p>
+            <p class="custom-text-block">Меня зовут Кузьмин Артур и я и слишком сильно затянул с проектом, чтобы расписывать эту страницу</p>
         <div class="custom-button-block">
             <a href="{% url 'index' %}" class="button button_style_blue">Перейти на главную</a>
         </div>

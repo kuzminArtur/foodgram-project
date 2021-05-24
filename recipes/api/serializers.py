@@ -11,4 +11,8 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('title', 'dimension')
         model = Ingredient
 
-# class PurchaseSerialiser:
+
+class PurchaseSerialiser:
+    class Meta:
+        fields = ('recipe',)
+        model = Purchase
