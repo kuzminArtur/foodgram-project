@@ -20,31 +20,39 @@ class GetIngredients(ListAPIView):
     search_fields = ['^title', ]
 
 
-class AddFavorites(APIView):
-    """Add recipe to favorites."""
+class AddRemoveBaseView(APIView):
+    """Base view for create and delete."""
     permission_classes = [IsAuthenticated]
+    model = None
 
     def post(self, request):
-        Favorite.objects.get_or_create(
+        """Create model instance."""
+        self.model.objects.get_or_create(
             user=request.user,
             recipe_id=request.data['id']
         )
 
         return Response({'success': True}, status=status.HTTP_200_OK)
 
-
-class RemoveFavorites(APIView):
-    """Delete recipe from favorites."""
-    permission_classes = [IsAuthenticated]
-
     def delete(self, request, pk):
-        Favorite.objects.filter(recipe_id=pk, user=request.user).delete()
+        """Remove model instance."""
+        self.model.objects.filter(recipe_id=pk, user=request.user).delete()
 
         return Response({'success': True}, status=status.HTTP_200_OK)
 
 
-class AddSubscriptions(APIView):
-    """Add user to author subscribers."""
+class Favorites(AddRemoveBaseView):
+    """Add/remove recipe to favorites."""
+    model = Favorite
+
+
+class Purchases(AddRemoveBaseView):
+    """Add/remove recipe to purchases."""
+    model = Purchase
+
+
+class Subscriptions(APIView):
+    """Add/remove user to author subscribers."""
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -63,39 +71,11 @@ class AddSubscriptions(APIView):
 
         return Response({'success': True}, status=status.HTTP_200_OK)
 
-    def validate_subscribe(self, author):
-        """Deny self-subscription."""
-        return author != self.request.user
-
-
-class RemoveSubscriptions(APIView):
-    """Remove user from author subscribers."""
-    permission_classes = [IsAuthenticated]
-
     def delete(self, request, pk):
         Follow.objects.filter(author_id=pk, user=request.user).delete()
 
         return Response({'success': True}, status=status.HTTP_200_OK)
 
-
-class AddPurchases(APIView):
-    """Add recipe to purchases."""
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        Purchase.objects.get_or_create(
-            user=request.user,
-            recipe_id=request.data['id']
-        )
-
-        return Response({'success': True}, status=status.HTTP_200_OK)
-
-
-class RemovePurchases(APIView):
-    """Delete recipe from purchases."""
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request, pk):
-        Purchase.objects.filter(recipe_id=pk, user=request.user).delete()
-
-        return Response({'success': True}, status=status.HTTP_200_OK)
+    def validate_subscribe(self, author):
+        """Deny self-subscription."""
+        return author != self.request.user

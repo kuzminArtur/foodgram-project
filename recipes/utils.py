@@ -42,7 +42,7 @@ def get_pdf(data):
     pdf.line(mm * 10, mm * 278, mm * 160, mm * 278)
     text_object.textLine('')
 
-    for i, ingredient in enumerate(data):
+    for ingredient in data:
         text_object.textLine(f'{ingredient["title"]} - {ingredient["amount"]} '
                              f'{ingredient["unit"]}')
     pdf.drawText(text_object)

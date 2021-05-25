@@ -26,12 +26,12 @@ views_patterns = [
 api_patterns = [
     path('ingredients/', api_views.GetIngredients.as_view(),
          name='ingredient'),
-    path('favorites/', api_views.AddFavorites.as_view(), name='add_favorites'),
-    path('favorites/<int:pk>/', api_views.RemoveFavorites.as_view()),
-    path('subscriptions/', api_views.AddSubscriptions.as_view()),
-    path('subscriptions/<int:pk>/', api_views.RemoveSubscriptions.as_view()),
-    path('purchases/', api_views.AddPurchases.as_view()),
-    path('purchases/<int:pk>/', api_views.RemovePurchases.as_view(),
+    path('favorites/', api_views.Favorites.as_view()),
+    path('favorites/<int:pk>/', api_views.Favorites.as_view()),
+    path('subscriptions/', api_views.Subscriptions.as_view()),
+    path('subscriptions/<int:pk>/', api_views.Subscriptions.as_view()),
+    path('purchases/', api_views.Purchases.as_view()),
+    path('purchases/<int:pk>/', api_views.Purchases.as_view(),
          name='remove_purchase'),
 ]
 
