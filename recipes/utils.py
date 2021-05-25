@@ -1,6 +1,6 @@
 import io
 
-from django.conf import settings
+from foodgram.settings import BASE_DIR
 from django.shortcuts import get_object_or_404
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
@@ -33,8 +33,7 @@ def get_pdf(data):
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer)
     pdfmetrics.registerFont(TTFont('DejaVuSans',
-                                   settings.BASE_DIR /
-                                   'recipes/fonts/DejaVuSans.ttf'))
+                                   BASE_DIR / 'recipes/fonts/DejaVuSans.ttf'))
     pdf.setFont("DejaVuSans", 14)
     text_object = pdf.beginText(mm * 10, mm * 280)
 

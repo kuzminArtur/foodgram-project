@@ -24,6 +24,10 @@ docker-compose exec web python manage.py collectstatic --noinput
 ```bash
 python3 manage.py load_ingredient
 ```
+- Для создания тегов выполнить
+```bash
+python3 manage.py create_tags
+```
 
 ## Альтернативный вариант с использованием make
 - Запуск проекта:

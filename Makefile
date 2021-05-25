@@ -33,6 +33,7 @@ fill-db:
 	make migrate
 	python3 manage.py createsuperuser
 	python3 manage.py load_ingredient
+	python3 manage.py create_tags
 	python manage.py filldb
 
 shell:
