@@ -21,8 +21,9 @@ class GetIngredients(ListAPIView):
 
 
 class AddRemoveBaseView(APIView):
-    model = None
+    """Base view for create and delete."""
     permission_classes = [IsAuthenticated]
+    model = None
 
     def post(self, request):
         """Create model instance."""
