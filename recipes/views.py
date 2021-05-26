@@ -79,13 +79,11 @@ class ProfileView(BaseRecipesListView):
 
     def get_context_data(self, **kwargs):
         """Add author to the context."""
-        is_subscriber = (
-                self.request.user.is_authenticated and
-                Follow.objects.filter(
-                    author=self.author,
-                    user=self.request.user
-                ).exists()
-        )
+        is_subscriber = (self.request.user.is_authenticated
+                         and Follow.objects.filter(author=self.author,
+                                                   user=self.request.user
+                                                   ).exists())
+
         kwargs.update({
             'author': self.author,
             'is_subscriber': is_subscriber,
@@ -109,13 +107,11 @@ class RecipeDetailView(IsInPurchasesMixin, IsFavoriteMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         """Add subscriber mark to the context."""
-        is_subscriber = (
-                self.request.user.is_authenticated and
-                Follow.objects.filter(
-                    author=self.object.author,
-                    user=self.request.user
-                ).exists()
-        )
+        is_subscriber = (self.request.user.is_authenticated
+                         and Follow.objects.filter(author=self.object.author,
+                                                   user=self.request.user
+                                                   ).exists()
+                         )
         kwargs.update({
             'is_subscriber': is_subscriber,
         })
@@ -138,8 +134,8 @@ class RecipeBaseNonSafeViewMixin(LoginRequiredMixin):
 
     def form_valid(self, form):
         """Processing valid data."""
-        form.instance.author_id = (form.instance.author_id or
-                                   self.request.user.id)
+        form.instance.author_id = (form.instance.author_id
+                                   or self.request.user.id)
         form.instance.save()
         add_ingredients(form.data, form.instance)
         return super().form_valid(form)
