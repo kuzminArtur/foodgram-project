@@ -12,11 +12,13 @@ class Ingredient(models.Model):
     title = models.CharField(max_length=256, verbose_name='Название')
     unit = models.CharField(max_length=128, verbose_name='Еденицы измерения')
 
-    def __str__(self):
-        return f'{self.title}, {self.unit}'
-
     class Meta:
         ordering = ['title']
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self):
+        return f'{self.title}, {self.unit}'
 
 
 class Tag(models.Model):
@@ -39,7 +41,11 @@ class Tag(models.Model):
         max_length=20,
         verbose_name='Цвет'
     )
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, verbose_name='Уникальный URL')
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.title
@@ -78,6 +84,11 @@ class Recipe(models.Model):
     )
     slug = models.SlugField(unique=True, verbose_name='Уникальный URL')
 
+    class Meta:
+        ordering = ['-pub_date', ]
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
     def save(self, **kwargs):
         """Append slug field value."""
         if not self.slug and self.id:
@@ -86,9 +97,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
-
-    class Meta:
-        ordering = ['-pub_date', ]
 
 
 class RecipeIngredient(models.Model):
@@ -111,6 +119,10 @@ class RecipeIngredient(models.Model):
         ],
     )
 
+    class Meta:
+        verbose_name = 'Связь рецепт-ингредиент'
+        verbose_name_plural = 'Связи рецепт-ингредиент'
+
     def __str__(self):
         return f'{self.ingredient.title} - {self.amount} {self.ingredient}'
 
@@ -130,6 +142,13 @@ class Favorite(models.Model):
         verbose_name='Рецепт'
     )
 
+    class Meta:
+        verbose_name = 'Избранное. Связь пользователь-рецепт'
+        verbose_name_plural = 'Избранное. Связи пользователь-рецепт'
+        constraints = [
+            UniqueConstraint(fields=['user', 'recipe'], name='unique_favorite')
+        ]
+
 
 class Follow(models.Model):
     """Model for follow relation between two User."""
@@ -147,10 +166,14 @@ class Follow(models.Model):
     )
 
     class Meta:
-        """Duplicate subscription protection."""
+        verbose_name = 'Подписка. Связь пользователь-пользователь'
+        verbose_name_plural = 'Подписки. Связи пользователь-пользователь'
         constraints = [
             UniqueConstraint(fields=['user', 'author'], name='unique_follow')]
 
+    def clean(self):
+        if self.author==self.user:
+            raise ValueError('Подписка на самого себя не разрешена')
 
 class Purchase(models.Model):
     """Model for purchase relation between User and Recipe models."""
@@ -163,7 +186,8 @@ class Purchase(models.Model):
     )
 
     class Meta:
-        """Duplicate purchase protection."""
+        verbose_name = 'Покупка. Связь пользователь-рецепт'
+        verbose_name_plural = 'Покупки. Связи пользователь-рецепт'
         constraints = [
             UniqueConstraint(fields=['user', 'recipe'], name='unique_purchase')
         ]
