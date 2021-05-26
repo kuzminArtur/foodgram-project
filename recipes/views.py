@@ -124,9 +124,20 @@ class RecipeDetailView(IsInPurchasesMixin, IsFavoriteMixin, DetailView):
 class RecipeBaseNonSafeViewMixin(LoginRequiredMixin):
     """Common methods for Recipe create/edit/delete view."""
 
+    form_class = RecipeForm
+    template_name = 'recipes/recipe_form.html'
+
+    def get_success_url(self):
+        """Redirect to detail recipe view."""
+        return self.success_url or reverse_lazy(
+            'recipe',
+            kwargs={'slug': self.object.slug}
+        )
+
     def form_valid(self, form):
         """Processing valid data."""
-        form.instance.author = form.instance.author or self.request.user
+        form.instance.author_id = (form.instance.author_id or
+                                  self.request.user.id)
         form.instance.save()
         add_ingredients(form.data, form.instance)
         return super().form_valid(form)
@@ -156,28 +167,17 @@ class RecipeBaseNonSafeViewMixin(LoginRequiredMixin):
 class RecipeCreate(RecipeBaseNonSafeViewMixin,
                    CreateView):
     """Create recipe."""
-    form_class = RecipeForm
-    template_name = 'recipes/recipe_form.html'
-
-    def get_success_url(self):
-        """Redirect to detail recipe view."""
-        return reverse_lazy('recipe', kwargs={'slug': self.object.slug})
 
 
 class RecipeDelete(RecipeBaseNonSafeViewMixin, DeleteView):
     """Delete recipe view."""
+    template_name = None
     success_url = reverse_lazy('index')
 
 
 class RecipeEdit(RecipeBaseNonSafeViewMixin,
                  PermissionRequiredMixin, UpdateView):
     """Edit an existing recipe."""
-    form_class = RecipeForm
-    template_name = 'recipes/recipe_form.html'
-
-    def get_success_url(self):
-        """Redirect to detail recipe view."""
-        return reverse_lazy('recipe', kwargs={'slug': self.object.slug})
 
 
 class FavoriteView(LoginRequiredMixin, BaseRecipesListView):
