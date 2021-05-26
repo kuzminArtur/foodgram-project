@@ -11,8 +11,8 @@ from ..models import Ingredient, Favorite, Follow, Purchase
 
 User = get_user_model()
 
-SUCCESS_RESPONSE = {'success': True}
-FAIL_RESPONSE = {'success': False}
+SUCCESS_RESPONSE = JsonResponse({'success': True})
+FAIL_RESPONSE_DATA = {'success': False}
 
 
 class GetIngredients(ListAPIView):
@@ -36,8 +36,10 @@ class AddRemoveBaseView(APIView):
         )
 
         if created:
-            return JsonResponse(SUCCESS_RESPONSE)
-        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_409_CONFLICT)
+            return SUCCESS_RESPONSE
+        return JsonResponse(
+            FAIL_RESPONSE_DATA,
+            status=status.HTTP_409_CONFLICT)
 
     def delete(self, request, pk):
         """Remove model instance."""
@@ -47,8 +49,10 @@ class AddRemoveBaseView(APIView):
         ).delete()
 
         if count_deleted:
-            return JsonResponse(SUCCESS_RESPONSE)
-        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+            return SUCCESS_RESPONSE
+        return JsonResponse(
+            FAIL_RESPONSE_DATA,
+            status=status.HTTP_404_NOT_FOUND)
 
 
 class Favorites(AddRemoveBaseView):
@@ -70,7 +74,7 @@ class Subscriptions(APIView):
 
         if not self.validate_subscribe(author):
             return JsonResponse(
-                FAIL_RESPONSE,
+                FAIL_RESPONSE_DATA,
                 status=status.HTTP_403_FORBIDDEN
             )
 
@@ -79,8 +83,10 @@ class Subscriptions(APIView):
             author=author
         )
         if created:
-            return JsonResponse(SUCCESS_RESPONSE)
-        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_409_CONFLICT)
+            return SUCCESS_RESPONSE
+        return JsonResponse(
+            FAIL_RESPONSE_DATA,
+            status=status.HTTP_409_CONFLICT)
 
     def delete(self, request, pk):
         count_deleted, _ = Follow.objects.filter(
@@ -89,8 +95,10 @@ class Subscriptions(APIView):
         ).delete()
 
         if count_deleted:
-            return JsonResponse(SUCCESS_RESPONSE)
-        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+            return SUCCESS_RESPONSE
+        return JsonResponse(
+            FAIL_RESPONSE_DATA,
+            status=status.HTTP_404_NOT_FOUND)
 
     def validate_subscribe(self, author):
         """Deny self-subscription."""

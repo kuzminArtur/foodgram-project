@@ -9,6 +9,7 @@ class RecipeIngredientInLine(admin.StackedInline):
     extra = 1
     autocomplete_fields = ('ingredient',)
     verbose_name = 'Ингредиент'
+    min_num = 1
 
 
 @admin.register(RecipeIngredient)
