@@ -172,8 +172,9 @@ class Follow(models.Model):
             UniqueConstraint(fields=['user', 'author'], name='unique_follow')]
 
     def clean(self):
-        if self.author==self.user:
+        if self.author == self.user:
             raise ValueError('Подписка на самого себя не разрешена')
+
 
 class Purchase(models.Model):
     """Model for purchase relation between User and Recipe models."""

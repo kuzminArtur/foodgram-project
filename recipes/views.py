@@ -18,6 +18,7 @@ User = get_user_model()
 
 OBJECTS_PER_PAGE = 6
 
+
 class BaseRecipesListView(IsInPurchasesMixin, IsFavoriteMixin, ListView):
     """Base class for recipe list."""
     model = Recipe
@@ -138,7 +139,7 @@ class RecipeBaseNonSafeViewMixin(LoginRequiredMixin):
     def form_valid(self, form):
         """Processing valid data."""
         form.instance.author_id = (form.instance.author_id or
-                                  self.request.user.id)
+                                   self.request.user.id)
         form.instance.save()
         add_ingredients(form.data, form.instance)
         return super().form_valid(form)
