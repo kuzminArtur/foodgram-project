@@ -16,11 +16,12 @@ from .utils import get_pdf, add_ingredients
 
 User = get_user_model()
 
+OBJECTS_PER_PAGE = 6
 
 class BaseRecipesListView(IsInPurchasesMixin, IsFavoriteMixin, ListView):
     """Base class for recipe list."""
     model = Recipe
-    paginate_by = 6
+    paginate_by = OBJECTS_PER_PAGE
     queryset = Recipe.objects.all().select_related(
         'author').prefetch_related(
         'tags')
@@ -196,7 +197,7 @@ class FavoriteView(LoginRequiredMixin, BaseRecipesListView):
 class SubscriptionView(LoginRequiredMixin, ListView):
     """Show only subscription authors."""
     model = User
-    paginate_by = 6
+    paginate_by = OBJECTS_PER_PAGE
     queryset = User.objects.all()
     template_name = 'recipes/subscriptions.html'
 
