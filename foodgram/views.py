@@ -14,5 +14,3 @@ def page_not_found(request, exception):
 def server_error(request):
     """Show 505 error page."""
     return render(request, "misc/500.html", status=500)
-
-
