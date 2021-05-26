@@ -1,15 +1,18 @@
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import IngredientSerializer
 from ..models import Ingredient, Favorite, Follow, Purchase
 
 User = get_user_model()
+
+SUCCESS_RESPONSE = {'success': True}
+FAIL_RESPONSE = {'success': False}
 
 
 class GetIngredients(ListAPIView):
@@ -27,18 +30,25 @@ class AddRemoveBaseView(APIView):
 
     def post(self, request):
         """Create model instance."""
-        self.model.objects.get_or_create(
+        _, created = self.model.objects.get_or_create(
             user=request.user,
             recipe_id=request.data['id']
         )
 
-        return Response({'success': True}, status=status.HTTP_200_OK)
+        if created:
+            return JsonResponse(SUCCESS_RESPONSE)
+        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_409_CONFLICT)
 
     def delete(self, request, pk):
         """Remove model instance."""
-        self.model.objects.filter(recipe_id=pk, user=request.user).delete()
+        count_deleted, _ = self.model.objects.filter(
+            recipe_id=pk,
+            user=request.user
+        ).delete()
 
-        return Response({'success': True}, status=status.HTTP_200_OK)
+        if count_deleted:
+            return JsonResponse(SUCCESS_RESPONSE)
+        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_404_NOT_FOUND)
 
 
 class Favorites(AddRemoveBaseView):
@@ -59,22 +69,28 @@ class Subscriptions(APIView):
         author = get_object_or_404(User, id=request.data['id'])
 
         if not self.validate_subscribe(author):
-            return Response(
-                {'success': False},
+            return JsonResponse(
+                FAIL_RESPONSE,
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        Follow.objects.get_or_create(
+        _, created = Follow.objects.get_or_create(
             user=request.user,
             author=author
         )
-
-        return Response({'success': True}, status=status.HTTP_200_OK)
+        if created:
+            return JsonResponse(SUCCESS_RESPONSE)
+        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_409_CONFLICT)
 
     def delete(self, request, pk):
-        Follow.objects.filter(author_id=pk, user=request.user).delete()
+        count_deleted, _ = Follow.objects.filter(
+            author_id=pk,
+            user=request.user
+        ).delete()
 
-        return Response({'success': True}, status=status.HTTP_200_OK)
+        if count_deleted:
+            return JsonResponse(SUCCESS_RESPONSE)
+        return JsonResponse(FAIL_RESPONSE, status=status.HTTP_404_NOT_FOUND)
 
     def validate_subscribe(self, author):
         """Deny self-subscription."""
