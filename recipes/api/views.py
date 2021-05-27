@@ -12,7 +12,10 @@ from ..models import Ingredient, Favorite, Follow, Purchase
 User = get_user_model()
 
 SUCCESS_RESPONSE = JsonResponse({'success': True})
-FAIL_RESPONSE_DATA = {'success': False}
+FAIL_RESPONSE_DATA = JsonResponse(
+    {'success': False},
+    status=status.HTTP_400_BAD_REQUEST
+)
 
 
 class GetIngredients(ListAPIView):
@@ -30,16 +33,14 @@ class AddRemoveBaseView(APIView):
 
     def post(self, request):
         """Create model instance."""
-        _, created = self.model.objects.get_or_create(
+        created = self.model.create(
             user=request.user,
             recipe_id=request.data['id']
         )
 
         if created:
             return SUCCESS_RESPONSE
-        return JsonResponse(
-            FAIL_RESPONSE_DATA,
-            status=status.HTTP_409_CONFLICT)
+        return FAIL_RESPONSE_DATA
 
     def delete(self, request, pk):
         """Remove model instance."""
@@ -50,9 +51,7 @@ class AddRemoveBaseView(APIView):
 
         if count_deleted:
             return SUCCESS_RESPONSE
-        return JsonResponse(
-            FAIL_RESPONSE_DATA,
-            status=status.HTTP_404_NOT_FOUND)
+        return FAIL_RESPONSE_DATA
 
 
 class Favorites(AddRemoveBaseView):
@@ -84,9 +83,7 @@ class Subscriptions(APIView):
         )
         if created:
             return SUCCESS_RESPONSE
-        return JsonResponse(
-            FAIL_RESPONSE_DATA,
-            status=status.HTTP_409_CONFLICT)
+        return FAIL_RESPONSE_DATA
 
     def delete(self, request, pk):
         count_deleted, _ = Follow.objects.filter(
@@ -96,9 +93,7 @@ class Subscriptions(APIView):
 
         if count_deleted:
             return SUCCESS_RESPONSE
-        return JsonResponse(
-            FAIL_RESPONSE_DATA,
-            status=status.HTTP_404_NOT_FOUND)
+        return FAIL_RESPONSE_DATA
 
     def validate_subscribe(self, author):
         """Deny self-subscription."""

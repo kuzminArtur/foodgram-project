@@ -124,7 +124,8 @@ class RecipeIngredient(models.Model):
         verbose_name_plural = 'Связи рецепт-ингредиент'
 
     def __str__(self):
-        return f'{self.ingredient.title} - {self.amount} {self.ingredient}'
+        return (f'{self.ingredient.title} - {self.amount} '
+                f'{self.ingredient.unit}')
 
 
 class Favorite(models.Model):
@@ -148,6 +149,9 @@ class Favorite(models.Model):
         constraints = [
             UniqueConstraint(fields=['user', 'recipe'], name='unique_favorite')
         ]
+
+    def __str__(self):
+        return f'{self.recipe} в избранном у {self.user}'
 
 
 class Follow(models.Model):
@@ -175,6 +179,9 @@ class Follow(models.Model):
         if self.author == self.user:
             raise ValueError('Подписка на самого себя не разрешена')
 
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'
+
 
 class Purchase(models.Model):
     """Model for purchase relation between User and Recipe models."""
@@ -192,3 +199,6 @@ class Purchase(models.Model):
         constraints = [
             UniqueConstraint(fields=['user', 'recipe'], name='unique_purchase')
         ]
+
+    def __str__(self):
+        return f'{self.recipe} в списке покупок у {self.user}'
