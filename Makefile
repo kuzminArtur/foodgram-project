@@ -10,6 +10,9 @@ down:
 db:
 	docker-compose up -d db
 
+stop_db:
+	docker-compose stop -d db
+
 reset-db:
 	docker-compose stop db && docker-compose rm -f db && docker-compose up -d db
 
@@ -20,21 +23,19 @@ nginx:
 	docker-compose up -d nginx
 
 migrate:
-	python3 manage.py makemigrations
-	python3 manage.py migrate
+	docker-compose exec web python manage.py migrate --noinput
 
 createsu:
-	python3 manage.py createsuperuser
+	docker-compose exec web python manage.py createsuperuser
 
 collectstatic:
-	python3 manage.py collectstatic --noinput
+	docker-compose exec web python manage.py collectstatic --noinput
 
 fill-db:
 	make migrate
-	python3 manage.py createsuperuser
-	python3 manage.py load_ingredient
-	python3 manage.py create_tags
-	python manage.py filldb
+	docker-compose exec web python manage.py createsuperuser
+	docker-compose exec web python manage.py load_ingredient
+	docker-compose exec web python manage.py create_tags
 
 shell:
 	python manage.py shell_plus
