@@ -36,6 +36,7 @@ fill-db:
 	docker-compose exec web python manage.py createsuperuser
 	docker-compose exec web python manage.py load_ingredient
 	docker-compose exec web python manage.py create_tags
+	docker-compose exec web python manage.py filldb
 
 shell:
 	python manage.py shell_plus
