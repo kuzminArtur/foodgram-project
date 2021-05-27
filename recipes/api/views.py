@@ -72,12 +72,9 @@ class Subscriptions(APIView):
         author = get_object_or_404(User, id=request.data['id'])
 
         if not self.validate_subscribe(author):
-            return JsonResponse(
-                FAIL_RESPONSE_DATA,
-                status=status.HTTP_403_FORBIDDEN
-            )
+            return FAIL_RESPONSE_DATA
 
-        _, created = Follow.objects.get_or_create(
+        created = Follow.objects.create(
             user=request.user,
             author=author
         )
