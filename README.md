@@ -3,7 +3,7 @@
 Дипломный проект Яндекс.Практикум.\
 Это онлайн-сервис, где пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
-[![Actions Status](https://github.com/vamotest/foodgram-project/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/vamotest/foodgram-project/actions)
+[![Actions Status](https://github.com/kuzminArtur/foodgram-project/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/kuzminArtur/foodgram-project/actions)
 
 ## Запуск проекта
 - Установить Docker согласно инструкции https://docs.docker.com/engine/install/
