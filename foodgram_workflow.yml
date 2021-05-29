@@ -1,9 +1,6 @@
 name: Foodgram workflow
 
-on:
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
 
@@ -90,3 +87,4 @@ jobs:
            docker-compose exec -T web python manage.py load_ingredient
            docker-compose exec -T web python manage.py create_tags
            docker-compose exec -T web python manage.py collectstatic --noinput
+
