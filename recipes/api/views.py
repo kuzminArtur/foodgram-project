@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 from django.http import JsonResponse
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -33,14 +35,15 @@ class AddRemoveBaseView(APIView):
 
     def post(self, request):
         """Create model instance."""
-        created = self.model.create(
-            user=request.user,
-            recipe_id=request.data['id']
-        )
-
-        if created:
+        try:
+            self.model.objects.create(
+                user=request.user,
+                recipe_id=request.data['id']
+            )
             return SUCCESS_RESPONSE
-        return FAIL_RESPONSE_DATA
+
+        except IntegrityError:
+            return FAIL_RESPONSE_DATA
 
     def delete(self, request, pk):
         """Remove model instance."""
@@ -71,16 +74,17 @@ class Subscriptions(APIView):
     def post(self, request):
         author = get_object_or_404(User, id=request.data['id'])
 
-        if not self.validate_subscribe(author):
-            return FAIL_RESPONSE_DATA
+        try:
+            self.validate_subscribe(author)
 
-        created = Follow.objects.create(
-            user=request.user,
-            author=author
-        )
-        if created:
+            Follow.objects.create(
+                user=request.user,
+                author=author
+            )
             return SUCCESS_RESPONSE
-        return FAIL_RESPONSE_DATA
+
+        except(ValidationError, IntegrityError):
+            return FAIL_RESPONSE_DATA
 
     def delete(self, request, pk):
         count_deleted, _ = Follow.objects.filter(
@@ -94,4 +98,5 @@ class Subscriptions(APIView):
 
     def validate_subscribe(self, author):
         """Deny self-subscription."""
-        return author != self.request.user
+        if author == self.request.user:
+            raise ValidationError
